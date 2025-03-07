@@ -3,65 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clicker Game</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-        }
-        h1 {
-            color: #333;
-        }
-        #counter {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 18px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-
-    <h1>Simple Clicker Game</h1>
-    <p id="counter">Clicks: 0</p>
-    <button onclick="increment()">Click Me!</button>
-
+    <title>Создать свою страницу</title>
     <script>
-        let count = 0;
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // Развернуть WebApp на весь экран
+        async function createUserPage() {
+            const userId = prompt("Введите ваш уникальный ID:");
 
-        function increment() {
-            count++;
-            document.getElementById("counter").textContent = "Clicks: " + count;
+            if (!userId) {
+                alert("ID не может быть пустым!");
+                return;
+            }
 
-            // Отправляем клики в бота
-            fetch("https://api.telegram.org/bot7261493127:AAEscSp8V2DxQMd2d0Q3A93OCdkhIYf41YU/sendMessage", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    chat_id: tg.initDataUnsafe?.user?.id,
-                    text: count  // Отправляем только число
-                })
-            })
-            .then(response => response.json())
-            .then(data => console.log("Bot response:", data))
-            .catch(error => console.error("Error sending message:", error));
+            const githubApiUrl = `https://api.github.com/repos/Aibek201157/aibek201157.github.io/contents/${userId}/index.html`;
+
+            const newPageContent = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Ваш личный сайт</title>
+            </head>
+            <body>
+                <h1>Привет, ${userId}!</h1>
+                <p>Это ваш персональный сайт.</p>
+            </body>
+            </html>`;
+
+            const data = {
+                message: `Создан сайт для ${userId}`,
+                content: btoa(unescape(encodeURIComponent(newPageContent))),
+                branch: "main"
+            };
+
+            try {
+                let response = await fetch(githubApiUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": "token YOUR_GITHUB_TOKEN",
+                        "Accept": "application/vnd.github.v3+json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert("Сайт создан! Через 10 секунд обновите страницу.");
+                } else {
+                    console.error("Ошибка создания страницы:", await response.text());
+                }
+            } catch (error) {
+                console.error("Ошибка запроса к GitHub API:", error);
+            }
         }
     </script>
-
+</head>
+<body>
+    <h1>Создать свою страницу</h1>
+    <button onclick="createUserPage()">Создать сайт для меня</button>
 </body>
 </html>
