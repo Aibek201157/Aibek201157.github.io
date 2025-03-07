@@ -48,13 +48,13 @@
             count++;
             document.getElementById("counter").textContent = "Clicks: " + count;
 
-            // Отправляем данные в бота
+            // Отправляем клики в бота
             fetch("https://api.telegram.org/bot7261493127:AAEscSp8V2DxQMd2d0Q3A93OCdkhIYf41YU/sendMessage", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     chat_id: tg.initDataUnsafe?.user?.id,
-                    text: "Вы накликали " + count + " очков!"
+                    text: count  // Отправляем только число
                 })
             })
             .then(response => response.json())
