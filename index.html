@@ -35,3 +35,16 @@
 <body>
 
     <h1>Simple Clicker Game</h1>
+    <p id="counter">Clicks: 0</p>
+    <button onclick="increment()">Click Me!</button>
+
+    <script>
+        let count = 0;
+        function increment() {
+            count++;
+            document.getElementById("counter").textContent = "Clicks: " + count;
+        }
+    </script>
+
+</body>
+</html>
