@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clicker Game</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -40,9 +41,25 @@
 
     <script>
         let count = 0;
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Развернуть WebApp на весь экран
+
         function increment() {
             count++;
             document.getElementById("counter").textContent = "Clicks: " + count;
+
+            // Отправляем данные в бота
+            fetch("https://api.telegram.org/bot7261493127:AAEscSp8V2DxQMd2d0Q3A93OCdkhIYf41YU/sendMessage", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: tg.initDataUnsafe?.user?.id,
+                    text: "Вы накликали " + count + " очков!"
+                })
+            })
+            .then(response => response.json())
+            .then(data => console.log("Bot response:", data))
+            .catch(error => console.error("Error sending message:", error));
         }
     </script>
 
