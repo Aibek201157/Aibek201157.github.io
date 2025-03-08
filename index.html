@@ -3,62 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Создать свою страницу</title>
-    <script>
-        async function createUserPage() {
-            const userId = prompt("Введите ваш уникальный ID:");
-
-            if (!userId) {
-                alert("ID не может быть пустым!");
-                return;
-            }
-
-            const githubApiUrl = `https://api.github.com/repos/Aibek201157/aibek201157.github.io/contents/${userId}/index.html`;
-
-            const newPageContent = `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Ваш личный сайт</title>
-            </head>
-            <body>
-                <h1>Привет, ${userId}!</h1>
-                <p>Это ваш персональный сайт.</p>
-            </body>
-            </html>`;
-
-            const data = {
-                message: `Создан сайт для ${userId}`,
-                content: btoa(unescape(encodeURIComponent(newPageContent))),
-                branch: "main"
-            };
-
-            try {
-                let response = await fetch(githubApiUrl, {
-                    method: "PUT",
-                    headers: {
-                        "Authorization": "token YOUR_GITHUB_TOKEN",
-                        "Accept": "application/vnd.github.v3+json",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (response.ok) {
-                    alert("Сайт создан! Через 10 секунд обновите страницу.");
-                } else {
-                    console.error("Ошибка создания страницы:", await response.text());
-                }
-            } catch (error) {
-                console.error("Ошибка запроса к GitHub API:", error);
-            }
+    <title>Информация об устройстве</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
         }
-    </script>
+        h1 {
+            color: #333;
+        }
+        #info {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Создать свою страницу</h1>
-    <button onclick="createUserPage()">Создать сайт для меня</button>
+
+    <h1>Информация о вашем устройстве</h1>
+    <p id="info">Собираем данные...</p>
+
+    <script>
+        async function getDeviceInfo() {
+            let infoElement = document.getElementById("info");
+
+            // Получаем внешний IP
+            let externalIP = "Не удалось определить";
+            try {
+                let response = await fetch("https://ipapi.co/json/");
+                let data = await response.json();
+                externalIP = data.ip + " (" + data.city + ", " + data.country_name + ")";
+            } catch (error) {
+                console.error("Ошибка получения внешнего IP:", error);
+            }
+
+            // Получаем локальный IP через WebRTC
+            async function getLocalIP() {
+                return new Promise((resolve) => {
+                    let pc = new RTCPeerConnection();
+                    pc.createDataChannel("");
+                    pc.onicecandidate = (event) => {
+                        if (event.candidate) {
+                            let localIP = event.candidate.address;
+                            resolve(localIP);
+                            pc.close();
+                        }
+                    };
+                    pc.createOffer().then((offer) => pc.setLocalDescription(offer));
+                });
+            }
+
+            let localIP = await getLocalIP().catch(() => "Не удалось определить");
+
+            // Информация о браузере и устройстве
+            let browserInfo = `Браузер: ${navigator.userAgent}`;
+            let os = `ОС: ${navigator.platform}`;
+            let screenSize = `Экран: ${window.screen.width}x${window.screen.height}`;
+
+            // Вывод данных
+            infoElement.innerHTML = `
+                <strong>Внешний IP:</strong> ${externalIP} <br>
+                <strong>Локальный IP:</strong> ${localIP} <br>
+                <strong>${browserInfo}</strong> <br>
+                <strong>${os}</strong> <br>
+                <strong>${screenSize}</strong>
+            `;
+        }
+
+        getDeviceInfo();
+    </script>
+
 </body>
 </html>
