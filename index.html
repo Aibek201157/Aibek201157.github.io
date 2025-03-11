@@ -3,76 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Информация об устройстве</title>
+    <title>PR APP</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
             text-align: center;
-            margin: 50px;
+            margin-bottom: 30px;
         }
-        h1 {
-            color: #333;
+
+        .header h1 {
+            font-size: 4rem;
+            text-transform: uppercase;
+            margin: 0;
+            font-weight: 900;
         }
-        #info {
-            font-size: 18px;
-            margin-top: 20px;
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 15px;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 0 0 10px 0;
+        }
+
+        .card-text {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.3;
+        }
+
+        .glow {
+            box-shadow: 0 0 20px rgba(76, 217, 100, 0.7);
+        }
+
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-
-    <h1>Информация о вашем устройстве</h1>
-    <p id="info">Собираем данные...</p>
+    <div class="container">
+        <div class="header">
+            <h1>PR APP</h1>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <img src="https://via.placeholder.com/400x200/000000/ffffff?text=Coding" class="card-image" alt="Developer">
+                <div class="card-content">
+                    <h2 class="card-title">Ищу людей для...</h2>
+                    <p class="card-text">Здравствуйте! Мне нужно новые разработчики телеграм ботов. Если то заинтересовался прошу связаться со мной.</p>
+                </div>
+            </div>
+            
+            <div class="card glow">
+                <img src="https://via.placeholder.com/400x200/000000/00FF00?text=Cat" class="card-image" alt="Green Cat">
+                <div class="card-content">
+                    <h2 class="card-title">Вз подписка!!</h2>
+                    <p class="card-text">Взаимное подписки на каналов ботов и групп!! Связь: @username</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <img src="https://via.placeholder.com/400x200/CCCCCC/000000?text=Hand" class="card-image" alt="Hand">
+                <div class="card-content">
+                    <h2 class="card-title">Ищу работу</h2>
+                    <p class="card-text">Ищу работу. Магомед, 40 лет без работы 20 летей.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <img src="https://via.placeholder.com/400x200/FF9900/000000?text=Star" class="card-image" alt="Star">
+                <div class="card-content">
+                    <h2 class="card-title">Лучший чат по ГТА 5 РП</h2>
+                    <p class="card-text">Чат ГТА5 РП вход разрешен всем! Ссылка: https://t.me/GTA5RP_chat</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        async function getDeviceInfo() {
-            let infoElement = document.getElementById("info");
-
-            // Получаем внешний IP
-            let externalIP = "Не удалось определить";
-            try {
-                let response = await fetch("https://ipapi.co/json/");
-                let data = await response.json();
-                externalIP = data.ip + " (" + data.city + ", " + data.country_name + ")";
-            } catch (error) {
-                console.error("Ошибка получения внешнего IP:", error);
-            }
-
-            // Получаем локальный IP через WebRTC
-            async function getLocalIP() {
-                return new Promise((resolve) => {
-                    let pc = new RTCPeerConnection();
-                    pc.createDataChannel("");
-                    pc.onicecandidate = (event) => {
-                        if (event.candidate) {
-                            let localIP = event.candidate.address;
-                            resolve(localIP);
-                            pc.close();
-                        }
-                    };
-                    pc.createOffer().then((offer) => pc.setLocalDescription(offer));
+        document.addEventListener("DOMContentLoaded", function() {
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.03)';
+                    this.style.transition = 'transform 0.3s ease';
                 });
-            }
-
-            let localIP = await getLocalIP().catch(() => "Не удалось определить");
-
-            // Информация о браузере и устройстве
-            let browserInfo = `Браузер: ${navigator.userAgent}`;
-            let os = `ОС: ${navigator.platform}`;
-            let screenSize = `Экран: ${window.screen.width}x${window.screen.height}`;
-
-            // Вывод данных
-            infoElement.innerHTML = `
-                <strong>Внешний IP:</strong> ${externalIP} <br>
-                <strong>Локальный IP:</strong> ${localIP} <br>
-                <strong>${browserInfo}</strong> <br>
-                <strong>${os}</strong> <br>
-                <strong>${screenSize}</strong>
-            `;
-        }
-
-        getDeviceInfo();
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                    this.style.transition = 'transform 0.3s ease';
+                });
+                
+                card.addEventListener('click', function() {
+                    alert('Card clicked! This would normally link to the full content.');
+                });
+            });
+        });
     </script>
-
 </body>
 </html>
